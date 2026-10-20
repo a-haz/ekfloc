@@ -116,11 +116,11 @@ Both estimators start on the true pose. The true robot follows the commanded vel
 
 Definitions, evaluated on every 0.05 s step of that seed:
 
-- `rmse_position_m` — square root of the mean squared horizontal error, in meters
-- `rmse_heading_deg` — square root of the mean squared wrapped heading error, in degrees
-- `final_position_error_m` — horizontal error at 56 s, in meters
-- `final_heading_error_deg` — absolute wrapped heading error at 56 s, in degrees
-- `mean_nees` — mean normalized estimation error squared
+- `rmse_position_m`: square root of the mean squared horizontal error, in meters
+- `rmse_heading_deg`: square root of the mean squared wrapped heading error, in degrees
+- `final_position_error_m`: horizontal error at 56 s, in meters
+- `final_heading_error_deg`: absolute wrapped heading error at 56 s, in degrees
+- `mean_nees`: mean normalized estimation error squared
 
 The `mean` row is the arithmetic mean of seeds 1 through 8.
 

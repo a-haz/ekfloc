@@ -16,7 +16,7 @@ namespace {
 
 void print_help() {
     std::cout
-        << "ekf_loc_benchmark — compare dead reckoning and the EKF on a fixed course\n"
+        << "ekf_loc_benchmark: compare dead reckoning and the EKF on a fixed course\n"
         << "\n"
         << "Runs several noise seeds. The commanded course does not change.\n"
         << "Both estimators integrate the same wheel odometry; only the EKF uses\n"

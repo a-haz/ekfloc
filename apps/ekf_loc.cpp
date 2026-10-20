@@ -13,7 +13,7 @@ namespace {
 
 void print_help() {
     std::cout
-        << "ekf_loc — simulated differential-drive EKF localization\n"
+        << "ekf_loc: simulated differential-drive EKF localization\n"
         << "\n"
         << "Fuse wheel odometry with range-bearing observations of known landmarks.\n"
         << "The true robot follows a fixed rounded-square course. Odometry and\n"
