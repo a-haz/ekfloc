@@ -6,11 +6,11 @@ Extended Kalman Filter localization for a differential-drive robot in the plane.
 
 The filter fuses wheel-odometry velocity with range and bearing observations of landmarks whose positions are known. Each observation carries a landmark id, so data association is known. A 2D simulator drives the robot on a fixed rounded-square course and adds configurable Gaussian noise to the odometry and to the landmark observations. Dead reckoning integrates that same noisy odometry and never sees the landmarks.
 
-**All results in this repository are simulated.** The table, the CSV files, and the figures are produced by the simulator in this repository. They are not measurements from a physical robot.
+All results here, including the table, CSV files and figures, come from this simulator, not from a physical robot.
 
 ## Build
 
-Requirements: CMake 3.18 or newer, a C++17 compiler, and Eigen 3.3 or newer. CMake downloads GoogleTest 1.15.2 while configuring the tests.
+You need CMake 3.18 or newer, a C++17 compiler and Eigen 3.3 or newer. CMake downloads GoogleTest 1.15.2 while configuring the tests.
 
 ```bash
 sudo apt-get install cmake g++ libeigen3-dev
@@ -112,7 +112,7 @@ Both estimators start on the true pose. The true robot follows the commanded vel
 
 ## Benchmark results
 
-**All numbers below are simulated.** The table is copied from [`docs/benchmark.csv`](docs/benchmark.csv).
+The table is [`docs/benchmark.csv`](docs/benchmark.csv).
 
 Definitions, evaluated on every 0.05 s step of that seed:
 
@@ -145,7 +145,7 @@ The `mean` row is the arithmetic mean of seeds 1 through 8.
 | mean | dead_reckoning | 1.222183 | 13.219937 | 1.899883 | 13.305051 | 2.244106 |
 | mean | ekf | 0.055597 | 1.289468 | 0.019172 | 0.759128 | 3.031112 |
 
-Across the eight seeds the simulated EKF position RMSE is 0.055597 m, against 1.222183 m for dead reckoning. Heading RMSE is 1.289468 deg for the EKF and 13.219937 deg for dead reckoning. The EKF mean NEES is 3.031112.
+Over the eight seeds the EKF position RMSE is 0.056 m against 1.22 m for dead reckoning, and heading RMSE is 1.29 deg against 13.2 deg. The EKF mean NEES is 3.03, close to the value of 3 expected for a consistent filter.
 
 The figures use seed 1 (`docs/sample_run.csv`).
 
