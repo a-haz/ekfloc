@@ -38,7 +38,7 @@ The benchmark runs seeds 1 through 8 on the fixed course and writes the summary 
   --landmarks docs/landmarks.csv
 ```
 
-Regenerate the figures from those files. This needs Python 3 with matplotlib, numpy, and pillow (`python3-matplotlib`, `python3-numpy`, and `python3-pil`).
+Regenerate the figures from those files. This needs Python 3 with matplotlib, numpy, and pillow (`python3-matplotlib`, `python3-numpy`, and `python3-pil`), or run `pip install -r scripts/requirements.txt`.
 
 ```bash
 python3 scripts/plot_benchmark.py \
