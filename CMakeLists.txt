@@ -60,6 +60,7 @@ if(EKFLOC_BUILD_TESTS)
         tests/test_ekf.cpp
         tests/test_consistency.cpp
         tests/test_simulator.cpp
+        tests/test_metrics.cpp
     )
     target_link_libraries(ekfloc_tests PRIVATE ekfloc GTest::gtest_main)
     target_include_directories(ekfloc_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
