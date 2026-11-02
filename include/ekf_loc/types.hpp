@@ -45,9 +45,9 @@ struct RangeBearing {
 
 /// Continuous-time odometry densities and discrete measurement standard deviations.
 struct NoiseParameters {
-    /// Power spectral density of linear-velocity noise, m^2/s^3.
+    /// Power spectral density of linear-velocity noise, m^2/s.
     double velocity_density{0.0};
-    /// Power spectral density of yaw-rate noise, rad^2/s^3.
+    /// Power spectral density of yaw-rate noise, rad^2/s.
     double yaw_rate_density{0.0};
     /// Range measurement standard deviation, m.
     double sigma_range{0.0};

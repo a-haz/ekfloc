@@ -65,7 +65,7 @@ y' &= y + v\,\Delta t\sin\theta_m \\
 \end{aligned}
 \]
 
-Linear velocity and yaw rate are treated as continuous-time white noise with power spectral densities \(q_v\) (m²/s³) and \(q_\omega\) (rad²/s³). Over a step the discrete input covariance is \(\mathrm{diag}(q_v/\Delta t,\ q_\omega/\Delta t)\), and the filter maps it through the control Jacobian \(G = \partial f/\partial\mathbf{u}\):
+Linear velocity and yaw rate are treated as continuous-time white noise with power spectral densities \(q_v\) (m²/s) and \(q_\omega\) (rad²/s). Over a step the discrete input covariance is \(\mathrm{diag}(q_v/\Delta t,\ q_\omega/\Delta t)\), and the filter maps it through the control Jacobian \(G = \partial f/\partial\mathbf{u}\):
 
 \[
 Q = G\,\mathrm{diag}(q_v/\Delta t,\ q_\omega/\Delta t)\,G^\top
@@ -92,8 +92,8 @@ Benchmark noise, shared by both estimators:
 
 | Quantity | Value |
 | --- | --- |
-| \(q_v\) | 0.02 m²/s³ |
-| \(q_\omega\) | 0.004 rad²/s³ |
+| \(q_v\) | 0.02 m²/s |
+| \(q_\omega\) | 0.004 rad²/s |
 | range std | 0.08 m |
 | bearing std | 2 deg |
 | initial covariance | \(\mathrm{diag}(0.02^2,\ 0.02^2,\ (0.5^\circ)^2)\) |
