@@ -102,13 +102,15 @@ Both estimators start on the true pose. The true robot follows the commanded vel
 
 ## Tests
 
-`ctest` runs 77 GoogleTest cases:
+`ctest` runs 89 GoogleTest cases:
 
 - angle wrapping, straight motion, in-place turns, and closure of the rounded-square course
 - analytic motion and measurement Jacobians checked against central differences, including \(\omega = 0\), reverse motion, and headings near \(\pm\pi\)
 - process-noise variance against the spectral-density discretization
 - a bearing innovation that crosses the \(\pm\pi\) branch cut
+- NEES and the trajectory scores against hand-computed values
 - Monte Carlo NEES for prediction-only localization, and NEES plus NIS for the filter with landmark updates
+- the benchmark command line, which rejects bad arguments before writing any file
 
 ## Benchmark results
 
