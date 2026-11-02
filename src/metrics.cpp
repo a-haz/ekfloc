@@ -43,11 +43,13 @@ Eigen::Vector3d pose_error(const Pose& truth, const Pose& estimate) {
 double normalized_estimation_error_squared(const Pose& truth, const Pose& estimate,
                                            const Eigen::Matrix3d& covariance) {
     const Eigen::Vector3d error = pose_error(truth, estimate);
-    Eigen::LDLT<Eigen::Matrix3d> ldlt(covariance);
-    if (ldlt.info() != Eigen::Success) {
+    // LLT fails on singular and indefinite matrices. LDLT reports success for
+    // both and would return a pseudo-inverse or even a negative NEES.
+    const Eigen::LLT<Eigen::Matrix3d> llt(covariance);
+    if (llt.info() != Eigen::Success) {
         throw std::runtime_error("covariance is not positive definite");
     }
-    return error.dot(ldlt.solve(error));
+    return error.dot(llt.solve(error));
 }
 
 MethodScore score_dead_reckoning(const std::vector<TrajectorySample>& samples) {

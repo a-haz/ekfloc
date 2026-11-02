@@ -47,6 +47,21 @@ TEST(MetricsNees, UsesWrappedHeadingError) {
                 1e-9);
 }
 
+TEST(MetricsNees, RejectsCovarianceThatIsNotPositiveDefinite) {
+    // e = (1, 0, 0.5). An indefinite diag(1, 1, -1) used to give 1 - 0.25 = 0.75,
+    // and a singular diag(1, 1, 0) used to give 1 by dropping the heading term.
+    const Pose truth{1.0, 0.0, 0.5};
+    const Pose estimate{0.0, 0.0, 0.0};
+    Eigen::Matrix3d indefinite = Eigen::Matrix3d::Identity();
+    indefinite(2, 2) = -1.0;
+    Eigen::Matrix3d singular = Eigen::Matrix3d::Identity();
+    singular(2, 2) = 0.0;
+    EXPECT_THROW(ekf_loc::normalized_estimation_error_squared(truth, estimate, indefinite),
+                 std::runtime_error);
+    EXPECT_THROW(ekf_loc::normalized_estimation_error_squared(truth, estimate, singular),
+                 std::runtime_error);
+}
+
 // Two samples where only the EKF estimate is off. Dead reckoning matches truth exactly.
 //   sample 0: EKF position error (3, 4), heading error 0.1 rad, nees_ekf 2.
 //   sample 1: EKF position error (5, 0), heading error wraps to -0.7 rad, nees_ekf 4.
