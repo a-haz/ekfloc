@@ -12,6 +12,10 @@ endif()
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
+function(ekfloc_apply_warnings target)
+    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endfunction()
+
 add_library(ekfloc
     src/motion_model.cpp
     src/observation_model.cpp
@@ -22,11 +26,7 @@ add_library(ekfloc
 )
 target_include_directories(ekfloc PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(ekfloc PUBLIC Eigen3::Eigen)
-target_compile_options(ekfloc PRIVATE -Wall -Wextra -Wpedantic -Werror)
-
-function(ekfloc_apply_warnings target)
-    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
-endfunction()
+ekfloc_apply_warnings(ekfloc)
 
 add_executable(ekf_loc apps/ekf_loc.cpp)
 target_link_libraries(ekf_loc PRIVATE ekfloc)
@@ -48,6 +48,7 @@ if(EKFLOC_BUILD_TESTS)
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
     )
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
     set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(googletest)
 
