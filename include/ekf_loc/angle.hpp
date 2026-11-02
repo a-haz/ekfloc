@@ -19,6 +19,10 @@ inline double wrap_angle(double angle) {
     angle = std::fmod(angle + kPi, two_pi);
     if (angle < 0.0) {
         angle += two_pi;
+        // A remainder within half an ulp of zero rounds up to exactly two_pi.
+        if (angle >= two_pi) {
+            angle = 0.0;
+        }
     }
     return angle - kPi;
 }

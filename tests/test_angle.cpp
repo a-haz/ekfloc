@@ -28,6 +28,15 @@ TEST(WrapAngle, NegativePiUnchanged) {
     EXPECT_NEAR(ekf_loc::wrap_angle(-ekf_loc::kPi), -ekf_loc::kPi, 1e-15);
 }
 
+TEST(WrapAngle, JustBelowNegativePiStaysInRange) {
+    // One ulp below -pi the fmod remainder is about -4e-16, and adding 2 pi to it
+    // rounds to exactly 2 pi, which used to return +pi.
+    const double wrapped = ekf_loc::wrap_angle(std::nextafter(-ekf_loc::kPi, -4.0));
+    EXPECT_GE(wrapped, -ekf_loc::kPi);
+    EXPECT_LT(wrapped, ekf_loc::kPi);
+    EXPECT_NEAR(std::cos(wrapped), -1.0, 1e-15);
+}
+
 TEST(WrapAngle, TwoPiMapsToZero) {
     EXPECT_NEAR(ekf_loc::wrap_angle(2.0 * ekf_loc::kPi), 0.0, 1e-12);
 }
