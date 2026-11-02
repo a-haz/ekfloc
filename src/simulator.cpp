@@ -118,10 +118,13 @@ SimulationResult Simulator::run() const {
 
         if ((step + 1) % measurement_stride == 0) {
             for (const Landmark& landmark : config_.landmarks) {
-                const Eigen::Vector2d predicted = predict_measurement(truth, landmark);
-                if (predicted(0) < config_.min_range || predicted(0) > config_.max_range) {
+                // Gate on the true range before predicting: predict_measurement
+                // throws for a landmark on the pose, which the course can pass over.
+                const double range = std::hypot(landmark.x - truth.x, landmark.y - truth.y);
+                if (range < config_.min_range || range > config_.max_range) {
                     continue;
                 }
+                const Eigen::Vector2d predicted = predict_measurement(truth, landmark);
                 RangeBearing measurement;
                 measurement.landmark_id = landmark.id;
                 measurement.range = predicted(0) + unit_normal(rng) * config_.noise.sigma_range;

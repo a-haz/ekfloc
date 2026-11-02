@@ -90,6 +90,20 @@ TEST(Simulator, LandmarksStayClearOfTheFixedCourse) {
     }
 }
 
+TEST(Simulator, LandmarkOnTheCourseIsRangeGatedInsteadOfFatal) {
+    // The course closes on its start point, so a landmark there is closer than
+    // min_range near both ends of the lap. predict_measurement used to throw at
+    // the lap end, where the true pose is within 1e-9 m of the landmark.
+    ekf_loc::SimConfig config = ekf_loc::benchmark_config(1);
+    config.duration = ekf_loc::kCoursePeriodS;
+    config.landmarks = {ekf_loc::Landmark{0, 0.0, 0.0}};
+    ekf_loc::SimulationResult result;
+    ASSERT_NO_THROW(result = ekf_loc::Simulator(config).run());
+    // 28 s at 5 Hz is 140 epochs; the few near the start point are gated out.
+    EXPECT_LT(result.measurement_count, 140u);
+    EXPECT_GT(result.measurement_count, 120u);
+}
+
 TEST(Simulator, RejectsAnEmptyCommand) {
     ekf_loc::SimConfig config = ekf_loc::benchmark_config(1);
     config.command = nullptr;
