@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <locale>
 #include <stdexcept>
 #include <string>
@@ -37,9 +38,12 @@ void print_help() {
 
 unsigned long long require_ull(const std::string& text, const std::string& flag) {
     try {
-        std::size_t used = 0;
-        const unsigned long long value = std::stoull(text, &used);
-        if (used != text.size() || value == 0) {
+        // Digits only: std::stoull alone would accept "-1" and wrap it to a huge value.
+        if (text.empty() || text.find_first_not_of("0123456789") != std::string::npos) {
+            throw std::invalid_argument("bad");
+        }
+        const unsigned long long value = std::stoull(text);
+        if (value == 0) {
             throw std::invalid_argument("bad");
         }
         return value;
@@ -89,7 +93,11 @@ int main(int argc, char** argv) {
             }
             const std::string value = argv[++i];
             if (flag == "--seeds") {
-                seed_count = static_cast<int>(require_ull(value, flag));
+                const unsigned long long count = require_ull(value, flag);
+                if (count > static_cast<unsigned long long>(std::numeric_limits<int>::max())) {
+                    throw std::runtime_error("too many seeds: " + value);
+                }
+                seed_count = static_cast<int>(count);
             } else if (flag == "--first-seed") {
                 first_seed = static_cast<std::uint64_t>(require_ull(value, flag));
             } else if (flag == "--trace-seed") {
@@ -108,6 +116,10 @@ int main(int argc, char** argv) {
         if (!trace_seed_set) {
             trace_seed = first_seed;
         }
+        // Reject a bad trace seed before the summary file is truncated.
+        if (trace_seed < first_seed || trace_seed - first_seed >= static_cast<std::uint64_t>(seed_count)) {
+            throw std::runtime_error("--trace-seed is outside the seeds that are run");
+        }
 
         if (output.has_parent_path()) {
             std::filesystem::create_directories(output.parent_path());
@@ -120,7 +132,6 @@ int main(int argc, char** argv) {
         summary << "seed,method,rmse_position_m,rmse_heading_deg,final_position_error_m,"
                    "final_heading_error_deg,mean_nees\n";
 
-        bool wrote_trace = false;
         std::vector<ekf_loc::MethodScore> dead_reckoning_scores;
         std::vector<ekf_loc::MethodScore> ekf_scores;
         dead_reckoning_scores.reserve(static_cast<std::size_t>(seed_count));
@@ -143,11 +154,7 @@ int main(int argc, char** argv) {
             if (seed == trace_seed) {
                 ekf_loc::write_trace_csv(trace, result.samples);
                 ekf_loc::write_landmarks_csv(landmarks, ekf_loc::benchmark_landmarks());
-                wrote_trace = true;
             }
-        }
-        if (!wrote_trace) {
-            throw std::runtime_error("--trace-seed is outside the seeds that were run");
         }
 
         const ekf_loc::MethodScore dead_reckoning_mean = average_scores(dead_reckoning_scores);

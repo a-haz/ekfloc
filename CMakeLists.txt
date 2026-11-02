@@ -61,9 +61,13 @@ if(EKFLOC_BUILD_TESTS)
         tests/test_consistency.cpp
         tests/test_simulator.cpp
         tests/test_metrics.cpp
+        tests/test_benchmark_cli.cpp
     )
     target_link_libraries(ekfloc_tests PRIVATE ekfloc GTest::gtest_main)
     target_include_directories(ekfloc_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+    # test_benchmark_cli.cpp runs the benchmark executable.
+    target_compile_definitions(ekfloc_tests PRIVATE EKFLOC_BENCHMARK_EXE="$<TARGET_FILE:ekf_loc_benchmark>")
+    add_dependencies(ekfloc_tests ekf_loc_benchmark)
     ekfloc_apply_warnings(ekfloc_tests)
     include(GoogleTest)
     gtest_discover_tests(ekfloc_tests DISCOVERY_MODE PRE_TEST)
