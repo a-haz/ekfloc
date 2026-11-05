@@ -148,6 +148,34 @@ TEST(ExtendedKalmanFilter, RepeatedPerfectMeasurementsConverge) {
     EXPECT_TRUE(is_symmetric_positive_definite(filter.covariance()));
 }
 
+TEST(ExtendedKalmanFilter, RangeAndBearingUpdateMatchesHandComputation) {
+    ekf_loc::NoiseParameters noise = test_noise();
+    noise.sigma_range = 0.5;
+    noise.sigma_bearing = 0.1;
+    Eigen::Matrix3d initial = Eigen::Matrix3d::Zero();
+    initial.diagonal() << 4.0, 9.0, 16.0;
+    ekf_loc::ExtendedKalmanFilter filter(ekf_loc::Pose{}, initial, noise);
+    const ekf_loc::Landmark landmark{0, 1.0, 0.0};
+    ekf_loc::RangeBearing measurement;
+    measurement.landmark_id = landmark.id;
+    measurement.range = 1.0;
+    measurement.bearing = 0.1;
+
+    const double nis = filter.update(measurement, landmark);
+
+    // Range observes x with zero innovation. Bearing observes y and -theta,
+    // giving a combined innovation variance of 9 + 16 + 0.01.
+    EXPECT_NEAR(nis, 0.01 / 25.01, 1e-12);
+    EXPECT_NEAR(filter.state().x, 0.0, 1e-12);
+    EXPECT_NEAR(filter.state().y, -0.9 / 25.01, 1e-12);
+    EXPECT_NEAR(filter.state().theta, -1.6 / 25.01, 1e-12);
+    EXPECT_NEAR(filter.covariance()(0, 0), 4.0 * 0.25 / 4.25, 1e-12);
+    EXPECT_NEAR(filter.covariance()(1, 1), 9.0 * 16.01 / 25.01, 1e-12);
+    EXPECT_NEAR(filter.covariance()(2, 2), 16.0 * 9.01 / 25.01, 1e-12);
+    EXPECT_NEAR(filter.covariance()(1, 2), -9.0 * 16.0 / 25.01, 1e-12);
+    EXPECT_TRUE(filter.covariance().isApprox(filter.covariance().transpose(), 1e-12));
+}
+
 TEST(ExtendedKalmanFilter, RejectsIndefiniteCovariance) {
     EXPECT_THROW(ekf_loc::ExtendedKalmanFilter(ekf_loc::Pose{}, Eigen::Matrix3d::Zero(), test_noise()),
                  std::invalid_argument);
